@@ -31,18 +31,30 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Inicializar variables de estado para PDF y DNIs
+if "pdf_file" not in st.session_state:
+    st.session_state.pdf_file = None
+if "dni_input" not in st.session_state:
+    st.session_state.dni_input = ""
+
+# Botón para reiniciar los campos
+if st.button("Nueva Extracción"):
+    st.session_state.pdf_file = None
+    st.session_state.dni_input = ""
+
 # Subida de PDF
-pdf_file = st.file_uploader("Cargar el archivo PDF", type=["pdf"])
+pdf_file = st.file_uploader("Cargar el archivo PDF", type=["pdf"], key="pdf_file")
+st.session_state.pdf_file = pdf_file  # Guardar el archivo en el estado
 
 # Entrada de DNIs
-dni_input = st.text_area("Introduce los DNIs separados por espacios:")
+dni_input = st.text_area("Introduce los DNIs separados por espacios:", value=st.session_state.dni_input, key="dni_input")
 
 # Botón para realizar la extracción
 if st.button("Extraer Diplomas"):
-    if pdf_file and dni_input:
+    if st.session_state.pdf_file and dni_input:
         lista_dnis = dni_input.split()  # Divide los DNIs por espacios
         escritor = PyPDF2.PdfWriter()
-        lector = PyPDF2.PdfReader(pdf_file)
+        lector = PyPDF2.PdfReader(st.session_state.pdf_file)
         paginas_por_dni = []
 
         for i, pagina in enumerate(lector.pages):
@@ -63,5 +75,8 @@ if st.button("Extraer Diplomas"):
         
         st.success("¡Diplomas extraídos!")
         st.download_button("Descargar el PDF", data=open("resultado.pdf", "rb"), file_name="diplomas_filtrados.pdf")
+        
+        # Limpiar el cuadro de texto después de extraer
+        st.session_state.dni_input = ""
     else:
         st.error("Por favor, carga un PDF e introduce los DNIs.")
