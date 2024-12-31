@@ -27,9 +27,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Subida de PDF y entrada de DNIs
-pdf_file = st.file_uploader("Cargar el archivo PDF", type=["pdf"])
-dni_input = st.text_area("Introduce los DNIs separados por espacios:")
+# Inicializar variables de estado
+if "pdf_file" not in st.session_state:
+    st.session_state.pdf_file = None
+if "dni_input" not in st.session_state:
+    st.session_state.dni_input = ""
+
+# Subida de PDF
+pdf_file = st.file_uploader("Cargar el archivo PDF", type=["pdf"], key="pdf_file")
+
+# Entrada de DNIs
+dni_input = st.text_area("Introduce los DNIs separados por espacios:", value=st.session_state.dni_input, key="dni_input")
 
 # Botón para realizar la extracción
 if st.button("Extraer Diplomas"):
@@ -60,6 +68,7 @@ if st.button("Extraer Diplomas"):
     else:
         st.error("Por favor, carga un PDF e introduce los DNIs.")
 
-# Botón para reiniciar la aplicación
+# Botón para reiniciar el formulario
 if st.button("Nueva Extracción"):
-    st.experimental_rerun()
+    st.session_state.pdf_file = None
+    st.session_state.dni_input = ""
