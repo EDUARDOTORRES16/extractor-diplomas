@@ -27,17 +27,18 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Inicializar variables de estado
-if "pdf_file" not in st.session_state:
-    st.session_state.pdf_file = None
-if "dni_input" not in st.session_state:
-    st.session_state.dni_input = ""
+# Inicializar variables de estado para reiniciar los campos
+if "reset" not in st.session_state:
+    st.session_state.reset = False
 
-# Subida de PDF
-pdf_file = st.file_uploader("Cargar el archivo PDF", type=["pdf"], key="pdf_file")
-
-# Entrada de DNIs
-dni_input = st.text_area("Introduce los DNIs separados por espacios:", value=st.session_state.dni_input, key="dni_input")
+# Reiniciar los campos si se hace clic en "Nueva Extracción"
+if st.session_state.reset:
+    pdf_file = None
+    dni_input = ""
+    st.session_state.reset = False
+else:
+    pdf_file = st.file_uploader("Cargar el archivo PDF", type=["pdf"])
+    dni_input = st.text_area("Introduce los DNIs separados por espacios:")
 
 # Botón para realizar la extracción
 if st.button("Extraer Diplomas"):
@@ -70,5 +71,5 @@ if st.button("Extraer Diplomas"):
 
 # Botón para reiniciar el formulario
 if st.button("Nueva Extracción"):
-    st.session_state.pdf_file = None
-    st.session_state.dni_input = ""
+    st.session_state.reset = True
+    st.experimental_rerun()
