@@ -27,18 +27,20 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Inicializar variables de estado para reiniciar los campos
-if "reset" not in st.session_state:
-    st.session_state.reset = False
+# Inicializar variables de estado
+if "pdf_file" not in st.session_state:
+    st.session_state.pdf_file = None
+if "dni_input" not in st.session_state:
+    st.session_state.dni_input = ""
 
-# Reiniciar los campos si se hace clic en "Nueva Extracción"
-if st.session_state.reset:
-    pdf_file = None
-    dni_input = ""
-    st.session_state.reset = False
-else:
-    pdf_file = st.file_uploader("Cargar el archivo PDF", type=["pdf"])
-    dni_input = st.text_area("Introduce los DNIs separados por espacios:")
+# Botón para reiniciar
+if st.button("Nueva Extracción"):
+    st.session_state.pdf_file = None
+    st.session_state.dni_input = ""
+
+# Subida de PDF y entrada de DNIs
+pdf_file = st.file_uploader("Cargar el archivo PDF", type=["pdf"], key="pdf_file")
+dni_input = st.text_area("Introduce los DNIs separados por espacios:", value=st.session_state.dni_input, key="dni_input")
 
 # Botón para realizar la extracción
 if st.button("Extraer Diplomas"):
@@ -68,8 +70,3 @@ if st.button("Extraer Diplomas"):
         st.download_button("Descargar el PDF", data=open("resultado.pdf", "rb"), file_name="diplomas_filtrados.pdf")
     else:
         st.error("Por favor, carga un PDF e introduce los DNIs.")
-
-# Botón para reiniciar el formulario
-if st.button("Nueva Extracción"):
-    st.session_state.reset = True
-    st.experimental_rerun()
